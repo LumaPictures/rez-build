@@ -1,0 +1,80 @@
+name : openimageio
+
+uuid : 5b35a042-09fd-11e3-91a1-4770545791d5
+
+description : "Image Processing Library"
+
+homepage : http://www.openimageio.org/
+
+authors : [Larry Gritz]
+
+config_version : 0
+
+version : 1.2.1
+
+variants :
+- [ platform-linux, gcc-4.1.2, boost-1.47.0, python-2.6 ]
+- [ platform-linux, gcc-4.1.2, boost-1.47.0, python-2.7 ]
+
+requires :
+- ilmbase-1.0.3+
+- openexr-1.7.1+
+- jpeg
+- png
+- tiff
+- hdf5
+- freetype2
+
+tools :
+- iconvert
+- idiff
+- igrep
+- iinfo
+- iv
+- maketx
+- oiiotool
+
+external_build :
+  url : https://github.com/OpenImageIO/oiio/archive/Release-1.2.1.tar.gz
+  sha1 : 38e7fbdeec8ff5b8744d7d70b4bdad3ceb88dc5a
+  working_dir : build
+
+  patches :
+  - type : replace
+    file : src/include/imagebufalgo.h
+    find : "enum OIIO_API "
+    replace : "enum "
+
+  commands :
+  - cmake
+        -D Boost_USE_STATIC_LIBS=ON
+        -D BUILD_SHARED_LIBS:BOOL=TRUE
+        -D BUILDSTATIC:BOOL=FALSE
+        -D LINKSTATIC:BOOL=TRUE
+        -D QT_QMAKE_EXECUTABLE=/usr/local/Trolltech/Qt-4.7.1/bin/qmake
+        -D CMAKE_INSTALL_PREFIX=${REZ_INSTALL_PREFIX}
+        -D ILMBASE_HOME=$ENV{REZ_ILMBASE_ROOT}
+        -D OPENEXR_HOME=$ENV{REZ_OPENEXR_ROOT}
+        -D TIFF_INCLUDE_DIR=${tiff_INCLUDE_DIRS}
+        -D TIFF_LIBRARY=${tiff_libtiff_LIBRARY}
+        -D PNG_PNG_INCLUDE_DIR=${png_INCLUDE_DIRS}
+        -D PNG_LIBRARY=${png_libpng15_LIBRARY}
+        -D JPEG_INCLUDE_DIR=${jpeg_INCLUDE_DIRS}
+        -D JPEG_LIBRARY=${jpeg_libjpeg_LIBRARY}
+        -D CMAKE_CXX_FLAGS:STRING=-fPIC
+        -D CMAKE_EXE_LINKER_FLAGS:STRING=-fPIC
+        -D Python_ADDITIONAL_VERSIONS=${PYTHON_MAJOR_VERSION}.${PYTHON_MINOR_VERSION}
+        -D USE_OPENCV=0
+        -D STOP_ON_WARNING=0
+        -USE_PYTHON=TRUE
+        -USE_OPENJPEG=FALSE
+        -G "Unix Makefiles"
+        ${REZ_SOURCE_DIR}/src
+  - make -j8
+  - make install -j8
+  - cp ${REZ_INSTALL_PREFIX}/lib/libOpenImageIO.so ${REZ_INSTALL_PREFIX}/lib/libOpenImageIO-1.so
+
+commands : |
+  CMAKE_MODULE_PATH.prepend('{root}/cmake')
+  PATH.prepend('{root}/bin')
+  PYTHONPATH.prepend('{root}/lib/python/site-packages')

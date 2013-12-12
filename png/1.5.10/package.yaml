@@ -1,0 +1,30 @@
+name : png
+
+uuid : 95df8af8-03b5-11e3-8737-17de7f7c0673
+
+description : "Image library for png's"
+
+homepage : http://www.libpng.org/pub/png/libpng.html
+
+authors : [Guy Eric Schalnat, Andreas Dilger, John Bowler, Glenn Randers-Pehrson]
+
+config_version : 0
+
+version : 1.5.10
+
+variants :
+- [ platform-linux, gcc-4.1.2 ]
+
+external_build:
+  url : http://downloads.sf.net/project/libpng/libpng15/older-releases/1.5.10/libpng-1.5.10.tar.gz
+  sha1 : af53f6990f937327e8bc3367c48b3968aede593f
+  # build out-of-source for pkgutils
+  working_dir : build
+
+  commands:
+  - ${REZ_SOURCE_DIR}/configure --with-pic --prefix=${REZ_INSTALL_PREFIX}
+  - make install
+
+commands: |
+  CMAKE_MODULE_PATH.prepend('{root}/cmake')
+  PATH.prepend('{root}/bin')

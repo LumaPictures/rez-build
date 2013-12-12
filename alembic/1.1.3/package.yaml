@@ -1,0 +1,60 @@
+name : alembic
+
+uuid : 4161bb04-cfd0-11e2-a8ff-001d4f455738
+
+description : Alembic open computer graphics interchange framework
+
+authors : [Sony, ILM]
+
+config_version : 0
+
+version : 1.1.3
+
+variants:
+- [ platform-linux, gcc-4.1.2, boost-1.47, maya-2012, arnold-4.0.12+ ]
+- [ platform-linux, gcc-4.1.2, boost-1.47, maya-2012, arnold-4.0.15+ ]
+- [ platform-linux, gcc-4.1.2, boost-1.47, maya-2014, arnold-4.0.15+ ]
+
+requires:
+- hdf5
+- ilmbase
+- boost
+#- python
+
+external_build:
+  urls : 
+  - url : https://code.google.com/p/alembic/
+    type : hg
+    revision : "."
+
+  patches :
+  - type : mq
+    url : /Volumes/luma/_globalSoft/_repos/alembic-patches.hg
+    #url : ssh://repos//luma/hg/alembic-patches.hg
+    revision : 0609cb3dc8b928f56e57f71f7b0a7d09cf57b73a
+
+  working_dir : build
+
+  commands:
+  - export ALEMBIC_INSTALL_PREFIX=${REZ_INSTALL_PREFIX} && 
+    python ${REZ_SOURCE_DIR}/build/bootstrap/alembic_bootstrap.py
+      --boost_include_dir=${boost_INCLUDE_DIRS}
+      --boost_thread_library=${boost_libboost_thread_LIBRARY}
+      --boost_python_library=${boost_libboost_python_LIBRARY}
+      --zlib_include_dir=/usr/include
+      --zlib_library=/usr/lib64/libz.so
+      --hdf5_include_dir=${hdf5_INCLUDE_DIRS}
+      --hdf5_hdf5_library=${hdf5_libhdf5_LIBRARY}
+      --ilmbase_include_dir=${ilmbase_INCLUDE_DIRS}/OpenEXR
+      --ilmbase_imath_library=${ilmbase_libImath_STATIC_LIBRARY}
+      --with-maya=$ENV{MAYA_LOCATION}
+      --with-arnold=$ENV{ARNOLD_HOME}
+      --generator='Unix Makefiles' ${REZ_BUILD_DIR}
+  - make -j8
+  - make install
+
+commands: |
+  CMAKE_MODULE_PATH.prepend('{root}/cmake')
+  PATH.prepend('{root}/bin')
+  MAYA_PLUG_IN_PATH.prepend('{root}/maya/plug-ins')
+  ARNOLD_PLUGIN_PATH.prepend('{root}/arnold/procedurals')

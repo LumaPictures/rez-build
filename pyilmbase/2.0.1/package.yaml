@@ -1,0 +1,55 @@
+name : pyilmbase
+
+uuid : 1d90ffae-3a75-11e3-bb82-001d4f455738
+
+description : python bindings for base ILM math libraries
+
+homepage : http://www.openexr.com/
+
+authors : [ILM]
+
+config_version : 0
+
+version : 2.0.1
+
+variants :
+#- [ platform-linux, boost-1.47, python-2.6 ]
+- [ platform-linux, boost-1.47, python-2.7 ]
+
+requires:
+- numpy
+- ilmbase-2.0
+
+build_requires:
+# module import crashes when built with gcc-4.1.2. *usually* we only care about
+# the python module, so the version of gcc shouldn't matter.
+# That said, PyAlembic does link against libPyImath. making gcc-4.6 a variant
+# would create a conflict with Maya (how?), so we make it a build-only requirement.
+# Hopefully nothing insidious will come of mixing libs compiled different versions
+# of gcc.
+- gcc-4.6
+
+external_build:
+  url : http://download.savannah.nongnu.org/releases/openexr/pyilmbase-2.0.1.tar.gz
+  sha1 : bf81b9b81f67dc77ae0fab51a28e3e74da1e3899
+  # build out-of-source for pkgutils
+  working_dir : build
+
+  commands:
+    # boost lib dir contains only static libs.
+    # fails to build without --enable-static (it still tries to product static libs)
+    #         --enable-static
+    - ${REZ_SOURCE_DIR}/configure --prefix=${REZ_INSTALL_PREFIX}
+        --with-pic
+        --with-ilmbase-prefix=$ENV{REZ_ILMBASE_ROOT}
+        --with-boost-include-dir=${boost_INCLUDE_DIRS}
+        --with-boost-lib-dir=${boost_LIBRARY_DIRS}
+    - make -j8
+    - make install
+
+commands: |
+  CMAKE_MODULE_PATH.prepend('{root}/cmake')
+  # even if ilmbase is static, configure fails if LD_LIBRARY_PATH is not set
+  LD_LIBRARY_PATH.prepend('{root}/lib')
+  PYTHONPATH.prepend('{root}/lib/python{pkgs.python.thru(minor)/site-packages')
+

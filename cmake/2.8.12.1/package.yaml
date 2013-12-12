@@ -1,0 +1,37 @@
+name: cmake
+
+uuid : f72a111a-5e15-11e3-8687-001d4f455738
+
+description : ^
+  CMake was created by Kitware in response to the need for a powerful,
+  cross-platform build environment for open-source projects such as ITK and VTK.
+  In addition to leading the development of this popular tool, Kitware also
+  offers commercial consulting, support and training to help your organization
+  effectively use CMake and the entire Kitware quality software process.
+
+homepage : http://www.cmake.org/
+
+authors : [Kitware]
+
+config_version : 0
+
+version: 2.8.12.1
+
+variants:
+- [ platform-darwin ]
+#- [ platform-linux ]
+
+external_build:
+  url: http://www.cmake.org/files/v2.8/cmake-2.8.12.1.tar.gz
+  sha1: 5661a607acbce7c16bb5f15ff2895fa5ca53a4da
+  working_dir: build
+  commands:
+    - ${REZ_SOURCE_DIR}/bootstrap
+      --prefix=${REZ_INSTALL_PREFIX}
+      --system-libs
+      --no-system-libarchive
+      --datadir=/share/cmake
+      --docdir=/share/doc/cmake
+      --mandir=/share/man
+    - make
+    - make install

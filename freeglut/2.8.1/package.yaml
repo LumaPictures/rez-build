@@ -1,0 +1,43 @@
+name : freeglut
+
+uuid : 7cca4e30-039d-11e3-92f6-f38737e772aa
+
+description : >
+  freeglut is a completely OpenSourced alternative to the
+  OpenGL Utility Toolkit (GLUT) library. GLUT was originally written by
+  Mark Kilgard to support the sample programs in the second edition
+  OpenGL 'RedBook'. Since then, GLUT has been used in a wide variety of
+  practical applications because it is simple, widely available and
+  highly portable.
+
+  GLUT (and hence freeglut) allows the user to create and manage windows
+  containing OpenGL contexts on a wide range of platforms and also read
+  the mouse, keyboard and joystick functions.
+
+  freeglut is released under the X-Consortium license.
+
+authors : [Pawel, W. Olszta, Andreas Umbach, Steve Baker]
+
+homepage : http://freeglut.sourceforge.net/
+
+config_version : 0
+
+version : 2.8.1
+
+# libXi-devel must be installed via yum for this package to compile.
+variants :
+- [ platform-linux, gcc-4.1.2 ]
+
+external_build:
+  url : http://downloads.sourceforge.net/project/freeglut/freeglut/2.8.1/freeglut-2.8.1.tar.gz
+  sha1 : 7330b622481e2226c0c9f6d2e72febe96b03f9c4
+  working_dir : build
+
+  commands:
+  - ${REZ_SOURCE_DIR}/configure
+        --with-pic
+        --prefix=${REZ_INSTALL_PREFIX}
+  - make install
+
+commands: |
+  CMAKE_MODULE_PATH.prepend('{root}/cmake')

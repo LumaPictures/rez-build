@@ -1,0 +1,59 @@
+name : openexr
+
+uuid : 5a99a38a-cfd4-11e2-afe2-001d4f455738
+
+description : >
+  high dynamic-range (HDR) image file format developed by ILM for use in
+  computer imaging applications
+
+homepage : http://www.openexr.com/
+
+authors : [ILM]
+
+config_version : 0
+
+version : 1.7.1
+
+variants :
+- [ platform-linux, gcc-4.1.2 ]
+
+requires :
+- ilmbase-1.0
+
+tools :
+- exr2aces
+- exrenvmap
+- exrheader
+- exrmakepreview
+- exrmaketiled
+- exrmultiview
+- exrstdattr
+
+external_build:
+  # do not use the links found directly on github:
+  # BAD: https://github.com/openexr/openexr/archive/v1.7.1.tar.gz
+  # this link was taken from the openexr homepage: 
+  url : https://github.com/downloads/openexr/openexr/openexr-1.7.1.tar.gz
+  sha1 : b97cc40af82a8514c95c7a6a31f4e3233dcc2912
+  # build out-of-source for pkgutils
+  working_dir : build
+
+  commands:
+  - ${REZ_SOURCE_DIR}/configure
+      --with-pic
+      --disable-debug
+      --disable-ilmbasetest
+      --with-ilmbase-prefix=$ENV{REZ_ILMBASE_ROOT} --prefix=${REZ_INSTALL_PREFIX}
+  - make
+  - make install
+
+  pycommands: |
+    command('{source_dir}/configure --with-pic --disable-ilmbasetest'
+            '--with-ilmbase-prefix={pkgs.ilmbase.root} --prefix={install_prefix}')
+    command('make')
+    command('make install')
+
+commands: |
+  CMAKE_MODULE_PATH.prepend('{root}/cmake')
+  PATH.prepend('{root}/bin')
+

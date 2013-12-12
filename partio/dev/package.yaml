@@ -1,0 +1,55 @@
+name : partio
+
+uuid : 5b4e74de-2bc0-11e3-9332-001d4f455738
+
+description : ^
+  The goal of Partio is to provide a unified interface akin to unified image
+  libraries that makes it easier to load, save, and manipulate particle files.
+
+authors : [Andrew Selle, John Cassella]
+
+config_version : 0
+
+version : 0.9.5
+
+variants:
+- [ Linux, gcc-4.1.2, maya-2014, arnold-4.0.16+, mtoa-0.25 ]
+#- [ Linux, gcc-4.6, houdini-12.5.427 ]
+
+# partio can use numpy in its python bindings, but currently we are not using it.
+# It complicates the build because numpy is in thirdParty and thus provided by
+# our luma_python package.  To avoid adding luma-specific packages we
+# we would need to use rez-egg-install on numpy to separate it into a rez package.
+# Not worth it, atm.
+# 
+#requires:
+#- numpy
+
+external_build:
+  urls :
+  - url : https://github.com/redpawfx/partio.git
+    type : git
+    revision : redpawfx-rez
+  working_dir : build
+
+  commands:
+  - cmake
+    -D CMAKE_INSTALL_PREFIX=${REZ_INSTALL_PREFIX}
+    ${REZ_SOURCE_DIR}
+  - make VERBOSE=1 -j8
+  - make install -j8
+
+
+commands: |
+  CMAKE_MODULE_PATH.prepend('{root}/cmake')
+  PARTIO_HOME = '{root}'
+  PYTHONPATH.prepend('{root}/python')
+
+  MAYA_SCRIPT_PATH.prepend('{root}/maya/scripts')
+  MAYA_PLUG_IN_PATH.prepend('{root}/maya/plug-ins')
+  XBMLANGPATH.prepend('{root}/maya/icons')
+
+  MTOA_EXTENSIONS_PATH.prepend('{root}/arnold/mtoa/extensions')
+  ARNOLD_PLUGIN_PATH.prepend('{root}/arnold/shaders')
+  ARNOLD_PLUGIN_PATH.prepend('{root}/arnold/procedurals')
+

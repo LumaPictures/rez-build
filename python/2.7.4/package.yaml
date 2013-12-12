@@ -1,0 +1,39 @@
+name: python
+
+uuid : 1d90ffae-3a75-11e3-bb82-001d4f455738
+
+description : ^
+  Python is a programming language that lets you work more quickly and integrate
+  your systems more effectively. You can learn to use Python and see almost
+  immediate gains in productivity and lower maintenance costs.
+
+homepage : http://www.python.org/
+
+authors : [Guido van Rossum]
+
+config_version : 0
+
+version: 2.7.4
+
+variants:
+- [ platform-darwin ]
+
+external_build:
+  # this installs to /usr/local until we decide otherwise. since rez does not
+  # work well with sudo, temporarily chmod ugo+w /usr/local
+  url: http://www.python.org/ftp/python/2.7.4/Python-2.7.4.tgz
+  sha1: 2283858b832fc391b8e96bb600e0b39e52ae97bd
+  working_dir: build
+  commands:
+    # this is currently osx-specific.  will add linux support once we port build
+    # commands to use python os_version=$(facter macosx_productversion_major)
+    - ${REZ_SOURCE_DIR}/configure
+        --prefix=/usr/local/python-2.7.4
+        --with-readline-dir=/usr/local
+        --enable-ipv6
+        --enable-framework=/usr/local/python-2.7.4
+        --with-universal-archs=intel
+        --enable-unicode=ucs4
+        --enable-universalsdk=/Developer/SDKs/MacOSX10.6.sdk
+    - make
+    - make install PYTHONAPPSDIR=/usr/local/python-2.7.4/apps

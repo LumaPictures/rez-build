@@ -1,0 +1,32 @@
+name : ilmbase
+
+uuid : 0a4ebec6-cfd7-11e2-9d77-001d4f455738
+
+description : base ILM math libraries
+
+homepage : http://www.openexr.com/
+
+authors : [ILM]
+
+config_version : 0
+
+version : 1.0.3
+
+variants :
+- [ platform-linux, gcc-4.1.2 ]
+
+#requires:
+#- python
+
+external_build:
+  url : https://github.com/downloads/openexr/openexr/ilmbase-1.0.3.tar.gz
+  sha1 : 20597d2a27e3b580e0972576e6b07bf4836b5dc6
+  # build out-of-source for pkgutils
+  working_dir : build
+
+  commands:
+    - ${REZ_SOURCE_DIR}/configure --with-pic --prefix=${REZ_INSTALL_PREFIX}
+    - make install
+
+commands: |
+  CMAKE_MODULE_PATH.prepend('{root}/cmake')

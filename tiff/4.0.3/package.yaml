@@ -1,0 +1,48 @@
+name : tiff
+
+uuid : 3373c982-03b6-11e3-bae3-d79583237f0f
+
+description : "Image library for tiff's"
+
+homepage : http://www.remotesensing.org/libtiff/
+
+authors : [Sam Leffler]
+
+config_version : 0
+
+version : 4.0.3
+
+variants :
+- [ platform-linux, gcc-4.1.2 ]
+
+requires :
+- jpeg-8.d
+
+external_build:
+  urls :
+  - url : ftp://ftp.remotesensing.org/pub/libtiff/tiff-4.0.3.tar.gz
+    sha256 : ea1aebe282319537fb2d4d7805f478dd4e0e05c33d0928baba76a7c963684872
+  - url : http://download.osgeo.org/libtiff/tiff-4.0.3.tar.gz
+    sha256 : ea1aebe282319537fb2d4d7805f478dd4e0e05c33d0928baba76a7c963684872
+
+  working_dir : build
+
+  commands:
+  - ${REZ_SOURCE_DIR}/configure
+        --with-pic
+        --prefix=${REZ_INSTALL_PREFIX}
+        --with-jpeg-include-dir=${jpeg_INCLUDE_DIRS}
+        --with-jpeg-lib-dir=${jpeg_LIBRARY_DIRS}
+  - make install
+
+  pycommands: |
+    commands('''{source_dir}/configure
+        --with-pic
+        --prefix={install_prefix}
+        --with-jpeg-include-dir={pkgs.jpeg.include_dirs}
+        --with-jpeg-lib-dir={pkgs.jpeg.library_dirs}''')
+    commands('make install')
+
+commands: |
+  CMAKE_MODULE_PATH.prepend('{root}/cmake')
+  PATH.prepend('{root}/bin')

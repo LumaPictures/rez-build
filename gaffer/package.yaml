@@ -1,0 +1,44 @@
+name : gaffer
+
+uuid : 07f72628-09f6-11e3-a211-e74063878241
+
+description : >
+  Gaffer is an open source application framework designed
+  specifically for creating tools for use in visual effects production.
+  It builds on top of the Cortex libraries, adding a flexible node-based
+  computation framework and a user interface framework for editing and
+  viewing node graphs. Gaffer ships with a number of sample modules and
+  applications, not least of which is a module for the on-demand
+  generation of procedural scenes for rendering.
+
+authors : [Image Engine]
+
+config_version : 0
+
+version : 0.76.0
+
+variants :
+- [ platform-linux, gcc-4.1.2, boost-1.47.0, python-2.6 ]
+- [ platform-linux, gcc-4.1.2, boost-1.47.0, python-2.7 ]
+
+requires :
+- ilmbase-1.0.3
+- openexr-1.7.1
+- freeglut
+- glew
+- openimageio
+- opencolorio
+- freetype2
+- alembic-1.1.3
+- hdf5
+- cortex
+
+# build_requires:
+# - doxygen
+
+commands:
+- export CMAKE_PREFIX_PATH<<!ROOT!
+- export PATH<<!ROOT!/bin
+- export GAFFER_ROOT=!ROOT!
+- export PYTHONPATH<<!ROOT!/python
+- export OCIO=!ROOT!/config/config.ocio

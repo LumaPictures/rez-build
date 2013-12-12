@@ -1,0 +1,51 @@
+name : mtoa
+
+uuid : 11295dc6-cf98-11e2-afc8-001d4f455738
+
+description : Maya to Arnold translator
+
+authors : [Solid Angle, Chad Dombrova, James Studdart]
+
+config_version : 0
+
+version : 0.25.2
+
+variants:
+- [ platform-linux, maya-2012, arnold-4.0.16+ ]
+- [ platform-linux, maya-2014, arnold-4.0.16+ ]
+
+requires:
+- python
+
+external_build:
+  urls : 
+  - url : https://hg.solidangle.com/priv/mtoa-main
+    type : hg
+    revision : "."
+
+  patches :
+  - type : mq
+    url : https://bitbucket.org/LumaPictures/mtoa-patches/.hg/patches
+    revision : default
+    guards : luma
+
+  commands:
+  - ./abuild install
+      TARGET_MODULE_PATH=${REZ_INSTALL_PREFIX}
+      MAYA_ROOT=$ENV{MAYA_LOCATION}
+      ARNOLD_API_INCLUDES=$ENV{ARNOLD_HOME}/include
+      MODE=opt
+      WARN_LEVEL='warn-only'
+      SHOW_CMDS=1
+
+commands: |
+  MAYA_PRESET_PATH.prepend('{root}/presets')
+  MAYA_SCRIPT_PATH.prepend('{root}/scripts')
+  MAYA_PLUG_IN_PATH.prepend('{root}/plug-ins')
+  MAYA_RENDER_DESC_PATH.prepend('{root}')
+  ARNOLD_PLUGIN_PATH.prepend('{root}/shaders')
+  MTOA_EXTENSIONS_PATH.prepend('{root}/extensions')
+  PYTHONPATH.prepend('{root}/scripts')
+  ARNOLD_PLUGIN_PATH.prepend('{root}/procedurals')
+  LD_LIBRARY_PATH.prepend('{root}/bin')
+  CMAKE_MODULE_PATH.prepend('{root}/cmake')

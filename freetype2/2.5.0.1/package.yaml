@@ -1,0 +1,41 @@
+name : freetype2
+
+uuid : 16342e92-0443-11e3-9fcb-5f44de50b85c
+
+description : >
+  FreeType is a software font engine that is designed to be small, efficient,
+  highly customizable, and portable while capable of producing high-quality
+  output (glyph images). It can be used in graphics libraries, display servers,
+  font conversion tools, text image generation tools, and many other products as
+  well.
+
+authors : [David Turner, Robert Wilhelm, Werner Lemberg]
+
+homepage : http://www.freetype.org
+
+config_version : 0
+
+version : 2.5.0.1
+
+requires :
+- png
+
+variants :
+- [ platform-linux, gcc-4.1.2 ]
+
+external_build:
+  url : http://downloads.sf.net/project/freetype/freetype2/2.5.0/freetype-2.5.0.1.tar.gz
+  sha1 : 2d539b375688466a8e7dcc4260ab21003faab08c
+  working_dir : build
+
+  commands:
+  - ${REZ_SOURCE_DIR}/configure LIBPNG_CFLAGS="-I${png_INCLUDE_DIRS}" LIBPNG_LDFLAGS="-L${png_LIBRARY_DIRS}"
+        --with-pic
+        --prefix=${REZ_INSTALL_PREFIX}
+  - make
+  - make install
+
+commands: |
+  CMAKE_MODULE_PATH.prepend('{root}/cmake')
+  PATH.prepend('{root}/bin')
+  FREETYPE_DIR = '{root}'

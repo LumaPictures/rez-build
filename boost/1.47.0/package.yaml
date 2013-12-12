@@ -1,0 +1,42 @@
+name : boost
+
+uuid : db780f70-d216-11e2-b4f6-001d4f455738
+
+description : >
+  of libraries for C++ that provide support for tasks and structures such as
+  linear algebra, pseudorandom number generation, multithreading, image
+  processing, regular expressions, and unit testing
+
+authors : [Boost.org]
+
+homepage : http://www.boost.org
+
+config_version : 0
+
+version : 1.47.0
+
+variants :
+- [ platform-linux, gcc-4.1.2, python-2.6 ]
+- [ platform-linux, gcc-4.1.2, python-2.7 ]
+- [ platform-linux, gcc-4.6, python-2.6 ]
+- [ platform-linux, gcc-4.6, python-2.7 ]
+
+external_build:
+  url : http://downloads.sourceforge.net/project/boost/boost/1.47.0/boost_1_47_0.tar.gz
+  sha1 : f3295e282433276d83e1b5ba5ed757c975ed54fd
+
+ # patches:
+ # - [append, tools/build/v2/user-config.jam, "\\nusing mpi ;"]
+ # - [append, tools/build/v2/user-config.jam, "\\nusing gcc : : : \\<cxxflags\\>-fPIC -m64\\ ;"]
+
+  commands:
+  - ./bootstrap.sh --without-icu
+  - ./b2 install link=static --toolset=gcc cxxflags=-fPIC 
+      --prefix=${REZ_INSTALL_PREFIX} --exec-prefix=${REZ_INSTALL_PREFIX}
+      --build-dir=${REZ_BUILD_DIR}
+
+commands: |
+  CMAKE_MODULE_PATH.prepend('{root}/cmake')
+  BOOST_ROOT = '{root}'
+  BOOST_INCLUDEDIR = '{root}/include'
+  BOOST_LIBRARYDIR = '{root}/lib'

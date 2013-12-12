@@ -1,0 +1,30 @@
+name : jpeg
+
+uuid : 7cca4e30-039d-11e3-92f6-f38737e772aa
+
+description : "Image library for jpeg's"
+
+homepage : http://www.ijg.org
+
+authors : [ Tom Lane, the Independent JPEG Group ]
+
+config_version : 0
+
+version : 8.d
+
+variants :
+- [ platform-linux, gcc-4.1.2 ]
+
+external_build:
+  url : http://www.ijg.org/files/jpegsrc.v8d.tar.gz
+  sha1 : f080b2fffc7581f7d19b968092ba9ebc234556ff
+  # build out-of-source for pkgutils
+  working_dir : build
+
+  commands:
+  - ${REZ_SOURCE_DIR}/configure --with-pic --prefix=${REZ_INSTALL_PREFIX}
+  - make install
+
+commands: |
+  CMAKE_MODULE_PATH.prepend('{root}/cmake')
+  PATH.prepend('{root}/bin')

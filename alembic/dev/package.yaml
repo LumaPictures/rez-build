@@ -1,0 +1,69 @@
+name : alembic
+
+uuid : 4161bb04-cfd0-11e2-a8ff-001d4f455738
+
+description : Alembic open computer graphics interchange framework
+
+authors : [Sony, ILM]
+
+config_version : 0
+
+version : 1.5.1
+
+variants:
+# no longer compiling with gcc-4.1.2 because imath module (pyilmbase) segfaults
+# on import when compiled with 4.1.2, but works with 4.6.
+#- [ platform-linux, gcc-4.1.2, boost-1.47, maya-2014, arnold-4.0.15+ ]
+- [ platform-linux, gcc-4.6, boost-1.47, maya-2014, arnold-4.0.15+ ]
+
+requires:
+- ilmbase
+- pyilmbase
+
+# static dependencies
+build_requires:
+- hdf5
+- boost
+
+external_build:
+  urls : 
+  - url : https://code.google.com/p/alembic/
+    type : hg
+    revision : "."
+
+  # patches :
+  # - type : mq
+  #   url : /Volumes/luma/_globalSoft/_repos/alembic-patches.hg
+  #   #url : ssh://repos//luma/hg/alembic-patches.hg
+  #   revision : default
+
+  working_dir : build
+
+  commands:
+  - export ALEMBIC_INSTALL_PREFIX=${REZ_INSTALL_PREFIX} &&
+    python ${REZ_SOURCE_DIR}/build/bootstrap/alembic_bootstrap.py
+      --boost_include_dir=${boost_INCLUDE_DIRS}
+      --boost_thread_library=${boost_libboost_thread_STATIC_LIBRARY}
+      --boost_python_library=${boost_libboost_python_STATIC_LIBRARY}
+      --zlib_include_dir=/usr/include
+      --zlib_library=/usr/lib64/libz.so
+      --hdf5_include_dir=${hdf5_INCLUDE_DIRS}
+      --hdf5_hdf5_library=${hdf5_libhdf5_STATIC_LIBRARY}
+      --ilmbase_include_dir=${ilmbase_INCLUDE_DIRS}/OpenEXR
+      --ilmbase_imath_library=${ilmbase_libImath_STATIC_LIBRARY}
+      --pyilmbase_include_dir=${pyilmbase_INCLUDE_DIRS}
+      --pyilmbase_pyimath_library=${pyilmbase_libPyImath_DYNAMIC_LIBRARY}
+      --pyilmbase_pyimath_module=${pyilmbase_LIBRARY_DIRS}/python$ENV{REZ_PYTHON_MAJOR_VERSION}.$ENV{REZ_PYTHON_MINOR_VERSION}/site-packages/imathmodule.so
+      --enable-pyalembic
+      --with-maya=$ENV{MAYA_LOCATION}
+      --with-arnold=$ENV{ARNOLD_HOME}
+      --generator='Unix Makefiles' ${REZ_BUILD_DIR}
+  - make -j8
+  - make install
+
+commands: |
+  CMAKE_MODULE_PATH.prepend('{root}/cmake')
+  PATH.prepend('{root}/bin')
+  MAYA_PLUG_IN_PATH.prepend('{root}/maya/plug-ins')
+  ARNOLD_PLUGIN_PATH.prepend('{root}/arnold/procedurals')
+  PYTHONPATH.prepend('{root}/lib/python')

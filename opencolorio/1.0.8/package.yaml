@@ -1,0 +1,59 @@
+config_version : 0
+
+name: opencolorio
+
+version: 1.0.8
+
+uuid: a0edc47d-5951-46ee-ad92-c07c78330456
+
+authors: [Sony Imageworks]
+
+description: >
+  OpenColorIO (OCIO) is a complete color management solution geared towards
+  motion picture production, with an emphasis on visual effects and computer
+  animation.
+
+homepage : http://opencolorio.org/
+
+reqires:
+- freeglut
+- glew
+
+variants:
+- [ platform-linux, gcc-4.1.2, python-2.7 ]
+- [ platform-linux, gcc-4.1.2, python-2.6 ]
+
+# Neither of these is working at the moment.
+# - [ platform-linux, gcc-4.1.2, nuke-7.0, python-2.6 ]
+# - [ platform-linux, gcc-4.1.2, python-2.6, openimageio ]
+# - [ platform-linux, gcc-4.1.2 ]  # python will be automatically detected from opencolor io.
+                          # So for now we'll specify it directly to prevent any weird builds.
+
+external_build:
+  url : https://github.com/imageworks/OpenColorIO/archive/v1.0.8.tar.gz
+  sha1 : 83b28202bdb1f692f74a80affea95d832354ec23
+  working_dir : build
+  patches :
+  - type : patch
+    file : tinyxml_patch.patch
+  - type : patch
+    file : yaml_patch.patch
+
+  commands:
+  - cmake
+        -DBoost_NO_SYSTEM_PATHS=1
+        -DCMAKE_INSTALL_PREFIX=${REZ_INSTALL_PREFIX}
+        -DOCIO_BUILD_NUKE=FALSE
+        -DOCIO_BUILD_APPS=FALSE
+        -DOCIO_USE_BOOST_PTR=FALSE
+        -DOCIO_BUILD_PYGLUE=TRUE
+        -DOCIO_PYGLUE_LINK=TRUE
+        ${REZ_SOURCE_DIR}
+  - make
+  - make install
+
+commands: |
+  CMAKE_MODULE_PATH.prepend('{root}/cmake')
+  PATH.prepend('{root}/bin')
+  PYTHONPATH.prepend('{root}/lib/python$REZ_PYTHON_SHORT_VERSION/site-packages')
+  LD_LIBRARY_PATH.prepend('{root}/lib')

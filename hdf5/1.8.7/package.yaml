@@ -1,0 +1,37 @@
+name : hdf5
+
+uuid : f04d72aa-d1fd-11e2-b420-001d4f455738
+
+description : >
+  set of file formats and libraries designed to store and organize large amounts
+  of numerical data
+
+homepage : http://www.hdfgroup.org/HDF5
+
+authors : [HDF Group]
+
+config_version : 0
+
+version : 1.8.7
+
+variants :
+- [ platform-linux, gcc-4.1.2 ]
+- [ platform-linux, gcc-4.6 ]
+
+external_build:
+  url : http://www.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8.7/src/hdf5-1.8.7.tar.gz
+  sha1 : cb8a2a353a7aabbae923029ebfb66426ddc28ff0
+  working_dir : build
+
+  commands:
+  - ${REZ_SOURCE_DIR}/configure --prefix=${REZ_INSTALL_PREFIX}
+        --with-pic
+        --disable--debug
+        --enable-shared=no
+        --enable-hl
+  - make
+  - make install
+
+commands: |
+  CMAKE_MODULE_PATH.prepend('{root}/cmake')
+  PATH.prepend('{root}/bin')
